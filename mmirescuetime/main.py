@@ -28,7 +28,11 @@ def post_commit(config, commit):
         'description'       : commit['Title'],
         'source'            : 'code commit',
     }
-    response = requests.post('https://www.recuetime.com/anapi/highlights_post', data=payload)
+    try:
+        response = requests.post('https://www.recuetime.com/anapi/highlights_post', data=payload)
+    except requests.exceptions.ConnectionError as e:
+        raise mothermayi.errors.FailHook(str(e))
+
     if not response.ok:
         failure = "{}: {}".format(response.status_code, response.text)
         raise mothermayi.errors.FailHook(failure)
